@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import api from '../services/api';
-import pokemonSprites from '../services/pokemonSprites'
 import { View, Image, Text, FlatList, TouchableOpacity, StyleSheet } from "react-native";
 
 export default class Main extends Component {
@@ -9,9 +8,8 @@ export default class Main extends Component {
     };
 
     state = {
-        productInfo: {},
+        pokemonInfo: {},
         results: [],
-        // page: 1,
         offSet: 0,
         limit: 20,
         ImageUrl: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/"
@@ -19,31 +17,26 @@ export default class Main extends Component {
 
     componentDidMount() {
         this.loadPokemons();
-        this.loadPokemonsSprites();
-
     }
-    loadPokemonsSprites = async () => {
-        // const response = await pokemonSprites.get(`132.jpg`);
 
-    }
 
     loadPokemons = async (offSet = 0) => {
         const response = await api.get(`/pokemon?offset=${offSet}&limit=${this.state.limit}`);
 
-        const { results, ...productInfo } = response.data;
+        const { results, ...pokemonInfo } = response.data;
 
         this.setState({
             results: [...this.state.results, ...results],
-            productInfo,
+            pokemonInfo,
             offSet
 
         })
     };
 
     loadMore = () => {
-        const { offSet, productInfo } = this.state;
+        const { offSet, pokemonInfo } = this.state;
         // Pages 'a variavel de numero maximo de paginas nessa api utlizada como exemplo
-        if (productInfo.next == null) return;
+        if (pokemonInfo.next == null) return;
 
         const offSetNumber = offSet + this.state.limit;
 
@@ -56,21 +49,20 @@ export default class Main extends Component {
         return id;
     }
 
-
+    
     renderItem = ({ item }) => (
-        <View style={styles.productContainer}>
+        <View style={styles.pokemonContainer}>
             <Text style={styles.pokemonName}>{this.takeIdFromUrl(item.url)}-{item.name}</Text>
-            {/* <Text style={styles.productDescription}>{item.description}</Text> */}
             <Image
                 style={styles.Image}
                 source={{ uri: this.state.ImageUrl + this.takeIdFromUrl(item.url) + ".png" }}
             />
-            <TouchableOpacity style={styles.productButton}
+            <TouchableOpacity style={styles.pokemonButton}
                 onPress={() => {
                     this.props.navigation.navigate("Pokemon", { pokemon: item })
                 }}
             >
-                <Text style={styles.productButtonText}>Detalhes do Pokemon</Text>
+                <Text style={styles.pokemonButtonText}>Detalhes do Pokemon</Text>
             </TouchableOpacity>
         </View>
     );
@@ -97,7 +89,7 @@ const styles = StyleSheet.create({
     list: {
         padding: 20
     },
-    productContainer: {
+    pokemonContainer: {
         backgroundColor: '#FFF',
         borderWidth: 1,
         borderColor: '#DDD',
@@ -111,13 +103,13 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         color: "#333",
     },
-    productDescription: {
+    pokemonDescription: {
         fontSize: 16,
         color: "#999",
         marginTop: 5,
         lineHeight: 24
     },
-    productButton: {
+    pokemonButton: {
         height: 42,
         borderRadius: 5,
         borderWidth: 2,
@@ -127,7 +119,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginTop: 10
     },
-    productButtonText: {
+    pokemonButtonText: {
         fontSize: 16,
         color: "#FFFAF0",
         fontWeight: "bold"
